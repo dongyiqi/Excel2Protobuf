@@ -48,16 +48,20 @@ class SheetInterpreter:
 
         self._protofile.decrease_indentation()
         self._protofile.layout_struct_tail()
-        # self._LayoutArray()
+        self._protofile.layout_array(self._sheet.name)
 
     def _interpreter_field(self, col_index):
         field_name = str(self._sheet.cell_value(FIELD_NAME_ROW, col_index)).strip()
         field_type = str(self._sheet.cell_value(FIELD_TYPE_ROW, col_index)).strip()
         field_comment = str(self._sheet.cell_value(FIELD_COMMENT_ROW, col_index)).strip()
+        if not self._verify_field_type(field_type):
+            print("unknow field type:%s" %field_type)
         # skip the field name started with symbol #
         if field_name.startswith('#'):
             return
+        self._protofile.layout_struct_field(field_type, field_name, field_comment)
 
+    @staticmethod
     def _verify_field_type(field_type):
         if field_type == "int32" or field_type == "int64" \
                 or field_type == "uint32" or field_type == "uint64" \

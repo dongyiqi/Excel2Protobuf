@@ -16,6 +16,12 @@ class ProtobufFile:
         self._is_layout = True
         # 保存所有结构的名字
         self._struct_name_list = []
+        # field_index
+        self._field_index = 0
+
+    def _get_add_field_index(self):
+        self._field_index += 1
+        return self._field_index
 
     def layout_file_header(self):
         """生成PB文件的描述信息"""
@@ -27,6 +33,11 @@ class ProtobufFile:
         self._output.append("""syntax = "proto3";\n""")
         self._output.append("\n")
         self._output.append("package Triniti;\n")
+
+    def layout_struct_field(self, field_type, field_name, comment):
+        self._output.append(" " * self._indentation + "/** " + comment + " */\n")
+        self._output.append(" " * self._indentation + field_type
+                            + " " + field_name + " = " + str(self._get_add_field_index()) + ";\n")
 
     def increase_indentation(self):
         # 增加缩进
@@ -45,6 +56,13 @@ class ProtobufFile:
         # 生成结构尾
         self._output.append(" " * self._indentation + "}\n")
         self._output.append("\n")
+
+    def layout_array(self, sheet_name):
+        """输出数组定义"""
+        self._output.append("message " + sheet_name + "_ARRAY {\n")
+        self._output.append("    repeated " + sheet_name + " items = 1;\n}\n")
+        # self._output.append("message " + sheet_name + "_Data {\n")
+        # self._output.append("    map<uint32, " + sheet_name + "> items = 1;\n}\n")
 
     def write2file(self, write_path):
         # 输出到文件
