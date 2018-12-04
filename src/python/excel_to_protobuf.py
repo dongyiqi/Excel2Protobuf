@@ -37,5 +37,6 @@ if __name__ == '__main__':
     excel_interpreter.flush(out_protos_path, out_protos_python_path, out_protos_csharp_path)
 
     excel_parser = WorkbookParser(src_path, out_protos_python_path)
+    excel_parser.parse()
     # inPath = sys.argv[0]
     print("time eplased %.2f" % (time.time()-start_time))

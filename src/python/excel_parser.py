@@ -9,10 +9,10 @@ import sys
 
 class WorkbookParser:
     def __init__(self, excel_file_path, protos_python_path):
+        self._excel_file_path = excel_file_path
         (excel_file_dir, excel_file_name_withext) = os.path.split(excel_file_path)
         (self._excel_file_name, excel_file_name_ext) = os.path.splitext(excel_file_name_withext)
         self._module_name = self._excel_file_name + "_pb2"
-        self._sheer_parser = []
         # load excel file
         try:
             self._workbook = xlrd.open_workbook(excel_file_path)
@@ -29,11 +29,12 @@ class WorkbookParser:
             print("load module(%s) failed! error:%s " % (self._module_name, e))
             raise
 
+    def parse(self):
         try:
             for sheet in self._workbook.sheets():
-                self._sheer_parser.append(SheetParser(self._module, sheet).parse())
+                SheetParser(self._module, sheet).parse()
         except Exception as e:
-            print("open sheet file(%s) failed! errror:%s" % (excel_file_path, e))
+            print("open sheet file(%s) failed! errror:%s" % (self._excel_file_path, e))
             raise
 
 
@@ -78,7 +79,6 @@ class SheetParser:
             field_type = field_type.split(' ')[1]
             is_repeated = True
         if is_repeated:
-            value_array = []
             splited_values = field_value.split('|')
             for splited_value in splited_values:
                 field_strong_value = self._get_field_strong_value_single(field_type, splited_value)
@@ -88,7 +88,6 @@ class SheetParser:
             field_strong_value = self._get_field_strong_value_single(field_type, field_value)
             if field_strong_value is not None:
                 item.__setattr__(field_name, field_strong_value)
-
 
     @staticmethod
     def _get_field_strong_value_single(field_type, field_value):
