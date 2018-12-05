@@ -48,14 +48,16 @@ class WorkbookParser:
             print("open sheet file(%s) failed! errror:%s" % (self._excel_file_path, e))
             raise
 
-    def serialize(self, out_proto_data_path):
+    def serialize(self, temp_proto_data_path, data_out):
         data = self._get_data_binaray()
-        file_name = out_proto_data_path + self._excel_file_name.lower() + ".pb"
+        pb_file = data_out if data_out is not None else temp_proto_data_path
+        file_name = pb_file + "/" + self._excel_file_name + ".pb"
         file = open(file_name, 'wb+')
         file.write(data)
         file.close()
+        print("exported protobuff data to :%s" % file_name)
         data = self._get_data_readable()
-        file_name = out_proto_data_path + self._excel_file_name.lower() + ".txt"
+        file_name = temp_proto_data_path + "/" + self._excel_file_name + ".txt"
         file = open(file_name, 'w+')
         file.write(data)
         file.close()
@@ -96,7 +98,7 @@ class SheetParser:
 
         for column_index in range(0, self._col_count):
             field_name = self._sheet.cell_value(FIELD_NAME_ROW, column_index)
-            if field_name.startswith('#'):
+            if field_name.startswith('#') or len(field_name) <= 0:
                 continue
             field_type = self._sheet.cell_value(FIELD_TYPE_ROW, column_index)
             field_value = self._sheet.cell_value(cur_row, column_index)
@@ -104,20 +106,24 @@ class SheetParser:
             # print(field_name, field_strong_value)
 
     def _set_item_field(self, item, field_name, field_type, field_value):
-        is_repeated = False
-        if field_type.startswith("repeated"):
-            field_type = field_type.split(' ')[1]
-            is_repeated = True
-        if is_repeated:
-            splited_values = field_value.split('|')
-            for splited_value in splited_values:
-                field_strong_value = self._get_field_strong_value_single(field_name, field_type, splited_value)
+        try:
+            is_repeated = False
+            if field_type.startswith("repeated"):
+                field_type = field_type.split(' ')[1]
+                is_repeated = True
+            if is_repeated:
+                splited_values = field_value.split('|')
+                for splited_value in splited_values:
+                    field_strong_value = self._get_field_strong_value_single(field_name, field_type, splited_value)
+                    if field_strong_value is not None:
+                        item.__getattribute__(field_name).append(field_strong_value)
+            else:
+                field_strong_value = self._get_field_strong_value_single(field_name, field_type, field_value)
                 if field_strong_value is not None:
-                    item.__getattribute__(field_name).append(field_strong_value)
-        else:
-            field_strong_value = self._get_field_strong_value_single(field_name, field_type, field_value)
-            if field_strong_value is not None:
-                item.__setattr__(field_name, field_strong_value)
+                    item.__setattr__(field_name, field_strong_value)
+        except Exception as e:
+            print("please check it, maybe type is wrong. sheet:%s column:%s e:%s" % (self._sheet.name, field_name, e))
+            raise
 
     def _get_field_strong_value_single(self, field_name, field_type, field_value):
         try:
