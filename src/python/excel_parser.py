@@ -5,6 +5,7 @@
 import xlrd
 import os
 import sys
+from Utils import makedir
 
 
 class WorkbookParser:
@@ -28,14 +29,34 @@ class WorkbookParser:
         except Exception as e:
             print("load module(%s) failed! error:%s " % (self._module_name, e))
             raise
+        self._workbook_data_root = getattr(self._module, self._excel_file_name + '_Data')()
+        self._parse()
 
-    def parse(self):
+    def _get_data_readable(self):
+        return str(self._workbook_data_root)
+
+    def _get_data_binaray(self):
+        return self._workbook_data_root.SerializeToString()
+
+    def _parse(self):
         try:
             for sheet in self._workbook.sheets():
-                SheetParser(self._module, sheet).parse()
+                SheetParser(self._workbook_data_root, sheet).parse()
         except Exception as e:
             print("open sheet file(%s) failed! errror:%s" % (self._excel_file_path, e))
             raise
+
+    def serialize(self, out_proto_data_path):
+        data = self._get_data_binaray()
+        file_name = out_proto_data_path + self._excel_file_name.lower() + ".pb"
+        file = open(file_name, 'wb+')
+        file.write(data)
+        file.close()
+        data = self._get_data_readable()
+        file_name = out_proto_data_path + self._excel_file_name.lower() + ".txt"
+        file = open(file_name, 'w+')
+        file.write(data)
+        file.close()
 
 
 DATA_ROW_START = 3
@@ -47,20 +68,18 @@ FIELD_COMMENT_ROW = 2
 
 
 class SheetParser:
-    def __init__(self, module, sheet):
-        self._module = module
+    def __init__(self, data_root, sheet):
         self._sheet = sheet
+        self._item_map = getattr(data_root, sheet.name+"_items")
         self._row_count = len(self._sheet.col_values(0))
         self._col_count = len(self._sheet.row_values(0))
 
     def parse(self):
         print("parse sheet ", self._sheet.name)
-        item_map = getattr(self._module, self._sheet.name + '_Data')()
         for cur_row in range(DATA_ROW_START, self._row_count):
-            item = item_map.items.add()
+            item = self._item_map.add()
             self._parse_row(item, cur_row)
-
-        print(str(item_map))
+        # print(str(self._item_map))
         return self
 
     def _parse_row(self, item, cur_row):
@@ -81,16 +100,15 @@ class SheetParser:
         if is_repeated:
             splited_values = field_value.split('|')
             for splited_value in splited_values:
-                field_strong_value = self._get_field_strong_value_single(field_type, splited_value)
+                field_strong_value = self._get_field_strong_value_single(field_name, field_type, splited_value)
                 if field_strong_value is not None:
                     item.__getattribute__(field_name).append(field_strong_value)
         else:
-            field_strong_value = self._get_field_strong_value_single(field_type, field_value)
+            field_strong_value = self._get_field_strong_value_single(field_name, field_type, field_value)
             if field_strong_value is not None:
                 item.__setattr__(field_name, field_strong_value)
 
-    @staticmethod
-    def _get_field_strong_value_single(field_type, field_value):
+    def _get_field_strong_value_single(self, field_name, field_type, field_value):
         try:
             if field_type == "int32" or field_type == "int64"\
                     or field_type == "uint32" or field_type == "uint64"\
@@ -121,7 +139,7 @@ class SheetParser:
             else:
                 return None
         except Exception as e:
-            print("please check it, maybe type is wrong. e:%s" % e)
+            print("please check it, maybe type is wrong. sheet:%s column:%s e:%s" % (self._sheet.name, field_name, e))
             raise
 
 

@@ -35,8 +35,6 @@ class ProtobufFile:
         self._field_index += 1
         return self._field_index
 
-
-
     def layout_struct_field(self, field_type, field_name, comment):
         self._output.append(" " * self._indentation + "/** " + comment + " */\n")
         self._output.append(" " * self._indentation + field_type
@@ -51,6 +49,7 @@ class ProtobufFile:
         self._indentation -= TAP_BLANK_NUM
 
     def layout_struct_head(self, struct_name):
+        self._field_index = 0
         # 生成结构头
         self._output.append("\n")
         self._output.append(" " * self._indentation + "message " + struct_name + "{\n")
@@ -59,6 +58,15 @@ class ProtobufFile:
         # 生成结构尾
         self._output.append(" " * self._indentation + "}\n")
         self._output.append("\n")
+
+    def laytout_sheets(self, workbook_name, sheet_names):
+        # 定义总入口
+        self._output.append("message " + workbook_name + "_Data {\n")
+        index = 0
+        for sheet_name in sheet_names:
+            index += 1
+            self._output.append("   repeated %s %s_items = %d;\n" % (sheet_name, sheet_name, index))
+        self._output.append("\n}\n")
 
     def layout_array(self, sheet_name):
         """输出数组定义"""

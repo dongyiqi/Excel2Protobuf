@@ -9,7 +9,7 @@
 ##
 from excel_interpreter import WorkbookInterperter
 from excel_parser import WorkbookParser
-from Utils import makedir
+from Utils import *
 
 import sys
 import time
@@ -22,6 +22,8 @@ if __name__ == '__main__':
 
     src_path = sys.argv[1]
     out_path = sys.argv[2]
+
+    rmdir(out_path)
     makedir(out_path)
 
     out_protos_path = "%s/protos/" % out_path
@@ -33,10 +35,17 @@ if __name__ == '__main__':
     out_protos_csharp_path = "%s/protos_csharp/" % out_path
     makedir(out_protos_csharp_path)
 
-    excel_interpreter = WorkbookInterperter(src_path)
-    excel_interpreter.flush(out_protos_path, out_protos_python_path, out_protos_csharp_path)
+    out_protos_cpp_path = "%s/protos_cpp/" % out_path
+    makedir(out_protos_cpp_path)
 
-    excel_parser = WorkbookParser(src_path, out_protos_python_path)
-    excel_parser.parse()
+    out_proto_data_path = "%s/proto_data/" % out_path
+    makedir(out_proto_data_path)
+
+    excel_interpreter = WorkbookInterperter(src_path)
+    excel_interpreter.interpreter()
+    excel_interpreter.save(out_protos_path, out_protos_python_path, out_protos_csharp_path, out_protos_cpp_path)
+
+    excel_serializer = WorkbookParser(src_path, out_protos_python_path)
+    excel_serializer.serialize(out_proto_data_path)
     # inPath = sys.argv[0]
-    print("time eplased %.2f" % (time.time()-start_time))
+    print("time eplased %.2f" % (time.time() - start_time))

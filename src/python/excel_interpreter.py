@@ -9,28 +9,29 @@ FIELD_COMMENT_ROW = 2
 
 class WorkbookInterperter:
     def __init__(self, excel_file_path):
-            (excel_file_dir, excel_file_name_withext) = os.path.split(excel_file_path)
-            (self._excel_file_name, excel_file_name_ext) = os.path.splitext(excel_file_name_withext)
-            self._protofile = ProtobufFile(self._excel_file_name)
-            self._sheetsInterpreter = []
+        self._excel_file_path = excel_file_path
+        (excel_file_dir, excel_file_name_withext) = os.path.split(excel_file_path)
+        (self._excel_file_name, excel_file_name_ext) = os.path.splitext(excel_file_name_withext)
+        self._protofile = ProtobufFile(self._excel_file_name)
+        self._sheetsInterpreter = []
+        try:
+            self._workbook = xlrd.open_workbook(self._excel_file_path)
+        except Exception as e:
+            print("open xls file(%s) failed! error:%s" % (self._excel_file_path, e))
+            raise
 
-            try:
-                self._workbook = xlrd.open_workbook(excel_file_path)
-            except Exception as e:
-                print("open xls file(%s) failed! error:%s" % (excel_file_path, e))
-                raise
+    def interpreter(self):
+        sheet_names = []
+        try:
+            for sheet in self._workbook.sheets():
+                self._sheetsInterpreter.append(SheetInterpreter(sheet, self._protofile).interpreter())
+                sheet_names.append(sheet.name)
+        except Exception as e:
+            print("open xls file(%s) failed! e:%s" % (self._excel_file_path, e))
+            raise
+        self._protofile.laytout_sheets(self._excel_file_name, sheet_names)
 
-            try:
-                for sheet in self._workbook.sheets():
-                    self._sheetsInterpreter.append(SheetInterpreter(sheet, self._protofile))
-            except BaseException:
-                print("open xls file(%s) failed!" % excel_file_path)
-                raise
-
-            for sheetInterpreter in self._sheetsInterpreter:
-                sheetInterpreter.interpreter()
-
-    def flush(self, out_protos_path, out_protos_python_path, out_protos_csharp_path):
+    def save(self, out_protos_path, out_protos_python_path, out_protos_csharp_path, out_protos_cpp_path):
         self._write2file(out_protos_path)
         try:
             # protoc compile python src file
@@ -40,6 +41,10 @@ class WorkbookInterperter:
             # protoc compile C# src file
             command = "protoc -I %s --csharp_out=%s %s" \
                       % (out_protos_path, out_protos_csharp_path, self._excel_file_name + ".proto")
+            os.system(command)
+            # protoc compile Cpp src file
+            command = "protoc -I %s --cpp_out=%s %s" \
+                      % (out_protos_path, out_protos_cpp_path, self._excel_file_name + ".proto")
             os.system(command)
         except Exception as e:
             print("protoc failed!")
@@ -70,7 +75,8 @@ class SheetInterpreter:
 
         self._protofile.decrease_indentation()
         self._protofile.layout_struct_tail()
-        self._protofile.layout_array(self._sheet.name)
+        # self._protofile.layout_array(self._sheet.name)
+        return self
 
     def _interpreter_field(self, col_index):
         field_name = str(self._sheet.cell_value(FIELD_NAME_ROW, col_index)).strip()
