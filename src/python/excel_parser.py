@@ -41,6 +41,8 @@ class WorkbookParser:
     def _parse(self):
         try:
             for sheet in self._workbook.sheets():
+                # sheet_item_class = getattr(self._module, sheet.name)()
+                # item_obj = sheet_item_class()
                 SheetParser(self._workbook_data_root, sheet).parse()
         except Exception as e:
             print("open sheet file(%s) failed! errror:%s" % (self._excel_file_path, e))
@@ -70,19 +72,28 @@ FIELD_COMMENT_ROW = 2
 class SheetParser:
     def __init__(self, data_root, sheet):
         self._sheet = sheet
-        self._item_map = getattr(data_root, sheet.name+"_items")
+        self._item_map = getattr(data_root, self._sheet.name+"_items")
         self._row_count = len(self._sheet.col_values(0))
         self._col_count = len(self._sheet.row_values(0))
+
+    def _get_sheet_struct_name(self):
+        return self._sheet.name
 
     def parse(self):
         print("parse sheet ", self._sheet.name)
         for cur_row in range(DATA_ROW_START, self._row_count):
-            item = self._item_map.add()
+            item_id = int(self._sheet.cell_value(cur_row, 0))
+            item = self._item_map.get_or_create(item_id)
             self._parse_row(item, cur_row)
+            # self._item_map[item_id] = item
+            # item = self._item_map.add()
+            # item_id = self._parse_row(item, cur_row)
         # print(str(self._item_map))
         return self
 
     def _parse_row(self, item, cur_row):
+        # id should always at the first column
+
         for column_index in range(0, self._col_count):
             field_name = self._sheet.cell_value(FIELD_NAME_ROW, column_index)
             if field_name.startswith('#'):
