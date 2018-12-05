@@ -1,13 +1,11 @@
 #Convert Excel file to Protobuf file by Python script
 
 HOW TO USE
-
-# parameters
-# -i --input_path input folder which contains excel files to convert.
-#       This script converts all excel file from that folder
-# -d --data_out folder where serialized binary protobuf file exported
-# -s --csharp_out folder where auto generated C# script file(from protoc.exe) exported
-# -c --cpp_out folder where auto generated C++ script file(from protoc.exe) exported
+parameters
+ -i --input_path input folder which contains excel files to convert. This script converts all excel file from that folder
+ -d --data_out folder where serialized binary protobuf file exported
+ -s --csharp_out folder where auto generated C# script file(from protoc.exe) exported
+ -c --cpp_out folder where auto generated C++ script file(from protoc.exe) exported
 
 
 referenced from https://github.com/jameyli/tnt
