@@ -9,11 +9,11 @@ FIELD_COMMENT_ROW = 2
 
 
 class WorkbookInterperter:
-    def __init__(self, excel_file_path):
+    def __init__(self, excel_file_path, namespace):
         self._excel_file_path = excel_file_path
         (excel_file_dir, excel_file_name_withext) = os.path.split(excel_file_path)
         (self._excel_file_name, excel_file_name_ext) = os.path.splitext(excel_file_name_withext)
-        self._protofile = ProtobufFile(self._excel_file_name)
+        self._protofile = ProtobufFile(self._excel_file_name, namespace)
         self._sheetsInterpreter = []
         try:
             self._workbook = xlrd.open_workbook(self._excel_file_path)

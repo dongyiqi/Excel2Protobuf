@@ -51,16 +51,16 @@ class WorkbookParser:
     def serialize(self, temp_proto_data_path, data_out):
         data = self._get_data_binaray()
         pb_file = data_out if data_out is not None else temp_proto_data_path
-        file_name = pb_file + "/" + self._excel_file_name + ".pb"
+        file_name = pb_file + "/" + self._excel_file_name + ".bytes"
         file = open(file_name, 'wb+')
         file.write(data)
         file.close()
         print("exported protobuff data to :%s" % file_name)
-        data = self._get_data_readable()
-        file_name = temp_proto_data_path + "/" + self._excel_file_name + ".txt"
-        file = open(file_name, 'w+')
-        file.write(data)
-        file.close()
+        # data = self._get_data_readable()
+        # file_name = temp_proto_data_path + "/" + self._excel_file_name + ".txt"
+        # file = open(file_name, 'w+')
+        # file.write(data)
+        # file.close()
 
 
 DATA_ROW_START = 3

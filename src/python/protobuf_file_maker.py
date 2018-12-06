@@ -3,7 +3,7 @@ TAP_BLANK_NUM = 4
 
 
 class ProtobufFile:
-    def __init__(self, protobuf_name):
+    def __init__(self, protobuf_name, namespace):
         # self._protobuf_name = protobuf_name
         # 将所有的输出先写到一个list， 最后统一写到文件 buffer
         self._output = []
@@ -18,9 +18,9 @@ class ProtobufFile:
         self._struct_name_list = []
         # field_index
         self._field_index = 0
-        self._layout_file_header(protobuf_name)
+        self._layout_file_header(protobuf_name, namespace)
 
-    def _layout_file_header(self, protobuf_name):
+    def _layout_file_header(self, protobuf_name, namespace):
         """生成PB文件的描述信息"""
         self._output.append("/**\n")
         self._output.append("* @file:   " + protobuf_name + "\n")
@@ -29,7 +29,8 @@ class ProtobufFile:
         self._output.append("*/\n")
         self._output.append("""syntax = "proto3";\n""")
         self._output.append("\n")
-        self._output.append("package TrinitiData;\n")
+
+        self._output.append("package %s;\n" % (namespace if namespace is not None else "TrinitiData"))
 
     def _get_add_field_index(self):
         self._field_index += 1
