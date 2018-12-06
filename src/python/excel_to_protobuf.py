@@ -35,6 +35,7 @@ def safe_create_temp_dir():
 
 
 def main():
+    print(os.getcwd())
     excels_dir = None
     data_out = None
     csharp_out = None
@@ -65,9 +66,11 @@ def main():
 
     excel_files2_convert = []
     for root, dirs, files in os.walk(excels_dir):
-        for file in files:
-            if os.path.splitext(file)[1] == ".xlsx" and not file.startswith('~$'):
-                excel_files2_convert.append(excels_dir+"/"+file)
+        if root == './':
+            for file in files:
+                if os.path.splitext(file)[1] == ".xlsx" and not file.startswith('~$'):
+                    folder = excels_dir + "/" if excels_dir != './' else ''
+                    excel_files2_convert.append(folder+file)
 
     for file in excel_files2_convert:
         export_excel2protobuff(file, data_out, csharp_out, cpp_out)
