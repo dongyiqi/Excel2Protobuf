@@ -14,6 +14,7 @@ class WorkbookParser:
         (excel_file_dir, excel_file_name_withext) = os.path.split(excel_file_path)
         (self._excel_file_name, excel_file_name_ext) = os.path.splitext(excel_file_name_withext)
         self._module_name = self._excel_file_name + "_pb2"
+        self._output_file_name = self._excel_file_name + ".bytes"
         # load excel file
         try:
             self._workbook = xlrd.open_workbook(excel_file_path)
@@ -51,11 +52,11 @@ class WorkbookParser:
     def serialize(self, temp_proto_data_path, data_out):
         data = self._get_data_binaray()
         pb_file = data_out if data_out is not None else temp_proto_data_path
-        file_name = pb_file + "/" + self._excel_file_name + ".bytes"
-        file = open(file_name, 'wb+')
+        file_path = pb_file + "/" + self._output_file_name
+        file = open(file_path, 'wb+')
         file.write(data)
         file.close()
-        print("exported protobuff data to :%s" % file_name)
+        print("exported protobuff data to :%s" % file_path)
         # data = self._get_data_readable()
         # file_name = temp_proto_data_path + "/" + self._excel_file_name + ".txt"
         # file = open(file_name, 'w+')
