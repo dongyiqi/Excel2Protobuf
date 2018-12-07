@@ -9,6 +9,12 @@
  * PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
  */
  
+/// <summary>
+/// HOW TO USE
+/// 1.Initialize: Call TrinitiConfigData.ConfigDatabase.CreateInstance(configdata_namespace)
+/// 2.If you want to load local data: Call LoadFromLocalResources(). This method parse the summmary in resource folder and load each workbook data
+/// 3.If you want to load specific data: Call LoadDataFromBytes(workbookname, databyes)
+/// </summary>
 using UnityEngine;
 using System;
 using System.Collections.Generic;
