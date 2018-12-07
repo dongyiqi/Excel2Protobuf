@@ -1,6 +1,16 @@
+##
+# @file:   excel_interpreter.py
+# @author: dongyiqi @  Triniti Interactive Limited
+# Copyright (c) dongyiqi All rights reserved.
+#
+# This code is licensed under the MIT License (MIT).
+# THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+# ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+# IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+# PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+
 import xlrd
 import os
-import shutil
 from protobuf_file_maker import ProtobufFile
 # 这一行还表示重复的最大个数，或结构体元素数
 FIELD_NAME_ROW = 0

@@ -1,8 +1,14 @@
 ##
 # @file:   excel_to_protobuf.py
 # @author: dongyiqi @  Triniti Interactive Limited
-# @brief:  export excel to protobuf
-# TODO: support export to C# or C++ optionally
+# Copyright (c) dongyiqi All rights reserved.
+#
+# This code is licensed under the MIT License (MIT).
+# THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+# ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+# IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+# PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+# brief:  export excel to protobuf
 ##
 # 确保所有表格的第一列都是唯一索引
 #
