@@ -96,7 +96,10 @@ class SheetParser:
     def parse(self):
         print("parse sheet ", self._sheet.name)
         for cur_row in range(DATA_ROW_START, self._row_count):
-            item_id = int(self._sheet.cell_value(cur_row, 0))
+            value = self._sheet.cell_value(cur_row, 0)
+            if value is None or value == '':
+                continue
+            item_id = int(value)
             item = self._item_map.get_or_create(item_id)
             self._parse_row(item, cur_row)
             # self._item_map[item_id] = item
