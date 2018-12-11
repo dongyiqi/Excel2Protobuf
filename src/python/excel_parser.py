@@ -157,6 +157,8 @@ class SheetParser:
                             return None
                         else:
                             return int(field_value)
+            elif field_type == "bool":
+                return field_value == 1
             elif field_type == "double" or field_type == "float":
                     if len(str(field_value).strip()) <= 0:
                         return None
