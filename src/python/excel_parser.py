@@ -127,11 +127,17 @@ class SheetParser:
                 field_type = field_type.split(' ')[1]
                 is_repeated = True
             if is_repeated:
-                splited_values = field_value.split('|')
-                for splited_value in splited_values:
-                    field_strong_value = self._get_field_strong_value_single(field_name, field_type, splited_value)
+                # data field is not a array
+                if str(field_value).find('|') == -1:
+                    field_strong_value = self._get_field_strong_value_single(field_name, field_type, field_value)
                     if field_strong_value is not None:
                         item.__getattribute__(field_name).append(field_strong_value)
+                else:
+                    splited_values = field_value.split('|')
+                    for splited_value in splited_values:
+                        field_strong_value = self._get_field_strong_value_single(field_name, field_type, splited_value)
+                        if field_strong_value is not None:
+                            item.__getattribute__(field_name).append(field_strong_value)
             else:
                 field_strong_value = self._get_field_strong_value_single(field_name, field_type, field_value)
                 if field_strong_value is not None:
