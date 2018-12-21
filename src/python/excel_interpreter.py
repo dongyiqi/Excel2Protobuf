@@ -108,6 +108,7 @@ class SheetInterpreter:
     @staticmethod
     def _verify_field_type(sheet_name, field_name, field_type):
         if field_type.startswith("repeated"):
+            # print("repeated:%s" % field_name)
             field_type = field_type.split(' ')[1]
 
         if field_type == "int32" or field_type == "int64" \

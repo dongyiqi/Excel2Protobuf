@@ -165,6 +165,8 @@ class SheetParser:
                     else:
                         return float(field_value)
             elif field_type == "string":
+                if isinstance(field_value, float) and int(field_value) == field_value:
+                    field_value = int(field_value)
                 field_value = field_value
                 if len(str(field_value)) <= 0:
                     return None
