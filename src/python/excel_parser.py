@@ -110,12 +110,14 @@ class SheetParser:
 
     def _parse_row(self, item, cur_row):
         # id should always at the first column
-
         for column_index in range(0, self._col_count):
             field_name = self._sheet.cell_value(FIELD_NAME_ROW, column_index)
             if field_name.startswith('#') or len(field_name) <= 0:
                 continue
             field_type = self._sheet.cell_value(FIELD_TYPE_ROW, column_index)
+            if str(field_type).endswith(' '):
+                error = "!!!sheet:%s column:%s type:%s end with blank!!!" %(self._sheet.name, field_name, field_type)
+                raise RuntimeError(error)
             field_value = self._sheet.cell_value(cur_row, column_index)
             self._set_item_field(item, field_name, field_type, field_value)
             # print(field_name, field_strong_value)
