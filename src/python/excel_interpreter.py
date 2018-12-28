@@ -102,7 +102,7 @@ class SheetInterpreter:
         if field_name.startswith('#') or len(field_name) <= 0:
             return
         if not self._verify_field_type(self._sheet.name,field_name, field_type):
-            print("unknow field type:%s" % field_type)
+            logError("unknow field type:%s" % field_type)
         # skip the field name started with symbol #
 
         self._protofile.layout_struct_field(field_type, field_name, field_comment)

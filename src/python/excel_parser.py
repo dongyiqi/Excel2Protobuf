@@ -16,7 +16,7 @@
 import xlrd
 import os
 import sys
-from Utils import makedir
+from Utils import *
 
 
 class WorkbookParser:
@@ -30,7 +30,7 @@ class WorkbookParser:
         try:
             self._workbook = xlrd.open_workbook(excel_file_path)
         except Exception as e:
-            print("open xls file(%s) failed! error:%s" % (excel_file_path, e))
+            logError("open xls file(%s) failed! error:%s" % (excel_file_path, e))
             raise
         # load python file
         try:
@@ -39,7 +39,7 @@ class WorkbookParser:
             exec('from ' + self._module_name + ' import *')
             self._module = sys.modules[self._module_name]
         except Exception as e:
-            print("load module(%s) failed! error:%s " % (self._module_name, e))
+            logError("load module(%s) failed! error:%s " % (self._module_name, e))
             raise
         self._workbook_data_root = getattr(self._module, self._excel_file_name + '_Data')()
         self._parse()
@@ -57,7 +57,7 @@ class WorkbookParser:
                 # item_obj = sheet_item_class()
                 SheetParser(self._workbook_data_root, sheet).parse()
         except Exception as e:
-            print("open sheet file(%s) failed! errror:%s" % (self._excel_file_path, e))
+            logError("open sheet file(%s) failed! errror:%s" % (self._excel_file_path, e))
             raise
 
     def serialize(self, temp_proto_data_path, data_out):
@@ -67,7 +67,7 @@ class WorkbookParser:
         file = open(file_path, 'wb+')
         file.write(data)
         file.close()
-        print("exported protobuff data to :%s" % file_path)
+        log("exported protobuff data to :%s" % file_path)
         # data = self._get_data_readable()
         # file_name = temp_proto_data_path + "/" + self._excel_file_name + ".txt"
         # file = open(file_name, 'w+')
@@ -94,7 +94,7 @@ class SheetParser:
         return self._sheet.name
 
     def parse(self):
-        print("parse sheet ", self._sheet.name)
+        log("parse sheet %s" % self._sheet.name)
         for cur_row in range(DATA_ROW_START, self._row_count):
             value = self._sheet.cell_value(cur_row, 0)
             if value is None or value == '':
@@ -185,7 +185,7 @@ class SheetParser:
             else:
                 return None
         except Exception as e:
-            print("please check it, maybe type is wrong. sheet:%s column:%s e:%s" % (self._sheet.name, field_name, e))
+            logError("please check it, maybe type is wrong. sheet:%s column:%s e:%s" % (self._sheet.name, field_name, e))
             raise
 
 

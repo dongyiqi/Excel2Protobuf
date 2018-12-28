@@ -63,10 +63,10 @@ def main():
             elif o in ("-c", "--cpp_out"):
                 cpp_out = a
     except Exception as e:
-        print("argv error:%s" % e)
+        logError("argv error:%s" % e)
 
     if excels_dir is None:
-        print("-i --input_path excels source folder not set properly")
+        logError("-i --input_path excels source folder not set properly")
     #if data_out is None:
     #   print("-d --data_out export protobuf serialized data .pb folder not set properly")
 
