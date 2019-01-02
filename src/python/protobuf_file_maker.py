@@ -43,14 +43,14 @@ class ProtobufFile:
 
         self._output.append("package %s;\n" % (namespace if namespace is not None else "TrinitiData"))
 
-    def _get_add_field_index(self):
-        self._field_index += 1
-        return self._field_index
+    # def _get_add_field_index(self):
+        # self._field_index += 1
+        # return self._field_index
 
-    def layout_struct_field(self, field_type, field_name, comment):
+    def layout_struct_field(self, field_type, field_name, field_index, comment):
         self._output.append(" " * self._indentation + "/** " + comment + " */\n")
         self._output.append(" " * self._indentation + field_type
-                            + " " + field_name + " = " + str(self._get_add_field_index()) + ";\n")
+                            + " " + field_name + " = " + str(field_index) + ";\n") # self._get_add_field_index()
 
     def increase_indentation(self):
         # 增加缩进

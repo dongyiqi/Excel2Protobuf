@@ -75,12 +75,12 @@ class WorkbookParser:
         # file.close()
 
 
-DATA_ROW_START = 3
+DATA_ROW_START = 4
 # assert first column must be the id col
-# ID_COLUMN_INDEX = 0
-FIELD_NAME_ROW = 0
-FIELD_TYPE_ROW = 1
-FIELD_COMMENT_ROW = 2
+FIELD_ORDER_INDEX = 0
+FIELD_NAME_ROW = 1
+FIELD_TYPE_ROW = 2
+FIELD_COMMENT_ROW = 3
 
 
 class SheetParser:

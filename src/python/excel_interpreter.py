@@ -10,12 +10,14 @@
 # PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
 import xlrd
-import os
 from protobuf_file_maker import ProtobufFile
+from Utils import *
+
 # 这一行还表示重复的最大个数，或结构体元素数
-FIELD_NAME_ROW = 0
-FIELD_TYPE_ROW = 1
-FIELD_COMMENT_ROW = 2
+FIELD_ORDER_INDEX = 0
+FIELD_NAME_ROW = 1
+FIELD_TYPE_ROW = 2
+FIELD_COMMENT_ROW = 3
 
 
 class WorkbookInterperter:
@@ -101,11 +103,11 @@ class SheetInterpreter:
         field_comment = str(self._sheet.cell_value(FIELD_COMMENT_ROW, col_index)).strip()
         if field_name.startswith('#') or len(field_name) <= 0:
             return
-        if not self._verify_field_type(self._sheet.name,field_name, field_type):
+        if not self._verify_field_type(self._sheet.name, field_name, field_type):
             logError("unknow field type:%s" % field_type)
         # skip the field name started with symbol #
-
-        self._protofile.layout_struct_field(field_type, field_name, field_comment)
+        field_index = str(int(self._sheet.cell_value(FIELD_ORDER_INDEX, col_index))).strip()
+        self._protofile.layout_struct_field(field_type, field_name, field_index, field_comment)
 
     @staticmethod
     def _verify_field_type(sheet_name, field_name, field_type):
