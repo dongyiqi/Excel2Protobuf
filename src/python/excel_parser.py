@@ -100,6 +100,10 @@ class SheetParser:
             if value is None or value == '':
                 continue
             item_id = int(value)
+            if item_id in self._item_map:
+                error = "!!!sheet:%s id:%s duplicated id!!!" % (self._sheet.name, item_id)
+                logError(error)
+                raise RuntimeError(error)
             item = self._item_map.get_or_create(item_id)
             self._parse_row(item, cur_row)
             # self._item_map[item_id] = item
@@ -117,6 +121,7 @@ class SheetParser:
             field_type = self._sheet.cell_value(FIELD_TYPE_ROW, column_index)
             if str(field_type).endswith(' '):
                 error = "!!!sheet:%s column:%s type:%s end with blank!!!" %(self._sheet.name, field_name, field_type)
+                logError(error)
                 raise RuntimeError(error)
             field_value = self._sheet.cell_value(cur_row, column_index)
             self._set_item_field(item, field_name, field_type, field_value)
